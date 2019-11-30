@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     $('.add-product-btn').on('click', function (e) {
         e.preventDefault();
         var name = $(this).data('name');
@@ -7,20 +8,47 @@ $(document).ready(function () {
         $(this).removeClass('btn-success').addClass('btn-default disabled');
         var html =
             `<tr>
+                <input type="hidden" name="products[]" value="${id}">
                 <td>${name}</td>
-                <td><input type="number" name="quantities[]" class="form-control input-sm" min="1" value="1"></td>
-                <td>${price}</td>               
+                <td><input type="number" name="quantities[]" data-price="${price}" class="form-control input-sm product-quantity" min="1" value="1"></td>
+                <td class="product-price">${price}</td>               
                 <td><button class="btn btn-danger btn-sm remove-product-btn" data-id="${id}"><span class="fa fa-trash"></span></button></td>
             </tr>`;
         $('.order-list').append(html);
-        $('body').on('click', '.disabled', function (e) {
-            e.preventDefault();
-        });
-        $('body').on('click', '.remove-product-btn', function (e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            $(this).closest('tr').remove();
-            $('#product-'+id).removeClass('btn-default disabled').addClass('btn-success');
-        });
+        calculateTotal();
     });
+
+    $('body').on('click', '.disabled', function (e) {
+        e.preventDefault();
+    });
+
+    $('body').on('click', '.remove-product-btn', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        $(this).closest('tr').remove();
+        $('#product-'+id).removeClass('btn-default disabled').addClass('btn-success');
+        calculateTotal();
+    });
+
+    $('body').on('keyup change', '.product-quantity', function () {
+        var quantity = parseInt($(this).val());
+        var uitPrice = $(this).data('price');
+        $(this).closest('tr').find('.product-price').html(quantity * uitPrice);
+        calculateTotal();
+    });
+
 });
+
+
+function calculateTotal() {
+    var price = 0;
+    $('.order-list .product-price').each(function (index) {
+        price += parseInt($(this).html());
+    });
+    $('.total-price').html(price);
+    if (price > 0) {
+        $('#add-order').removeClass('disabled')
+    }else {
+        $('#add-order').addClass('disabled')
+    }
+}

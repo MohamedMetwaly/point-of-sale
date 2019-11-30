@@ -96,6 +96,9 @@ class CategoryController extends Controller
     {
         $record = Category::findOrFail($id);
         $record->delete();
+        if ($record->image != null) {
+            unlink($record->image);
+        }
         session()->flash('success', (trans('admin.deleted')));
         return back();
     }

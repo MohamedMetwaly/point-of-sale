@@ -141,7 +141,9 @@ class ProductController extends Controller
     {
         $record = Product::findOrFail($id);
         $record->delete();
-        unlink($record->image);
+        if ($record->image != null) {
+            unlink($record->image);
+        }
         session()->flash('success', (trans('admin.deleted')));
         return back();
     }

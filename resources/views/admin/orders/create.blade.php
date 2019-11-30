@@ -144,7 +144,7 @@
 
                             <h4>{{trans('admin.total')}} : <span class="total-price">0</span></h4>
 
-                            <button class="btn btn-primary btn-block disabled" id="add-order-form-btn"><i class="fa fa-plus"></i>{{trans('admin.new_order')}}</button>
+                            <button class="btn btn-primary btn-block disabled" id="add-order"><i class="fa fa-plus"></i>{{trans('admin.new_order')}}</button>
 
                         {!!Form::close()!!}
 
