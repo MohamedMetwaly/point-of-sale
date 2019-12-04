@@ -51,10 +51,18 @@ return [
     'address' => 'Address',
     'orders' => 'Orders',
     'new_order' => 'New Order',
+    'edit_order' => 'Edit Order',
     'product' => 'Product',
     'quantity' => 'Quantity',
     'total' => 'Total',
     'price' => 'Price',
+    'previous_orders' => 'Previous Orders',
+    'client_name' => 'Client Name',
+    'show' => 'Show',
+    'created_at' => 'Created At',
+    'show_products' => 'Show Products',
+    'loading' => 'Loading',
+    'print' => 'Print',
     'ar' => [
         'name' => 'Name In Arabic'
     ],

@@ -37,6 +37,27 @@ $(document).ready(function () {
         calculateTotal();
     });
 
+    $('.order-products').on('click', function (e) {
+        e.preventDefault();
+        var url = $(this).data('url');
+        // alert(url);
+        var method = $(this).data('method');
+        $.ajax({
+            url: url,
+            method: method,
+            success: function (data) {
+                $('#order-product-list').empty();
+                $('#order-product-list').append(data);
+            }
+        })
+    });
+
+    $(document).on('click', '.print-btn', function() {
+
+        $('#print-area').printThis();
+
+    });
+
 });
 
 

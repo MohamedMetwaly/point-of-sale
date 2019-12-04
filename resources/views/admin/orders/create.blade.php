@@ -112,7 +112,7 @@
                     <div class="box-body">
 
                         {!!Form::model($model,[
-                            'action' => 'admin\OrderController@store'
+                            'action' => ['admin\OrderController@AddOrder',$client->id]
                         ])!!}
 
                         @if ($errors->any())

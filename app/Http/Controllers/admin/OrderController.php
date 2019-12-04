@@ -11,50 +11,89 @@ use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $orders = Order::whereHas('client', function ($q){
+            return $q->where('name', 'like', '%' . request()->search . '%');
+        })->latest()->paginate(5);
+        return view('admin.orders.index', compact('orders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param Client $client
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Client $client)
+    public function OrderCreate($id)
     {
+        $client = Client::findOrFail($id);
         $categories = Category::with('products')->get();
         $orders = $client->orders()->with('products')->paginate(5);
         return view('admin.orders.create', compact('client','categories', 'orders'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param Client $client
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Client $client)
+    public function AddOrder($id)
     {
-
+        $client = Client::findOrFail($id);
         $this->validate(request(),[
             'products' => 'required|array',
             'quantities' => 'required|array',
         ]);
-        $order =$client->orders()->create(request()->all());
+
+        $this->Attach($client);
+
+        session()->flash('success', (trans('admin.created')));
+        return redirect(route('order.index'));
+    }
+
+    public function Products(Order $order)
+    {
+        $products = $order->products()->get();
+        return view('admin.orders.show', compact('order', 'products'));
+    }
+
+    public function edit($id)
+    {
+        $order = Order::findOrFail($id);
+        $client = $order->client_id;
+        $categories = Category::with('products')->get();
+        return view('admin.orders.edit', compact('order','client', 'categories'));
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $client = $order->client_id;
+        $this->validate(request(),[
+            'products' => 'required|array',
+            'quantities' => 'required|array',
+        ]);
+
+        $this->Detach($order);
+        $this->Attach($client);
+
+        session()->flash('success', (trans('admin.updated')));
+        return redirect(route('order.index'));
+    }
+
+    public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        foreach ($order->products as $product){
+            $product->update([
+                'stock' => $product->stock + $product->pivot->quantity
+            ]);
+        }
+        $order->delete();
+        session()->flash('success', (trans('admin.deleted')));
+        return back();
+    }
+
+    private function Attach($client)
+    {
+        $order = $client->orders()->create(request()->all());
         $total_price = 0;
         foreach (request()->products as $index=>$product){
             $product_id = Product::findOrFail($product);
-            $total_price += $product_id->sale_price;
-            $order->products()->attach($product, ['quantity' => request()->quantities[$index]]);
+            $total_price += $product_id->sale_price * request()->quantities[$index];
+            $order->products()->attach($product_id, ['quantity' => request()->quantities[$index]]);
             $product_id->update([
                 'stock' => $product_id->stock - request()->quantities[$index]
             ]);
@@ -62,52 +101,15 @@ class OrderController extends Controller
         $order->update([
             'total_price' => $total_price
         ]);
-        session()->flash('success', (trans('admin.created')));
-        return back();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    private function Detach($order)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        foreach ($order->products as $product){
+            $product->update([
+                'stock' => $product->stock + $product->pivot->quantity
+            ]);
+        }
+        $order->delete();
     }
 }

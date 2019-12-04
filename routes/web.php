@@ -25,6 +25,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function(){
             Route::resource('client','ClientController');
             //orders routes
             Route::resource('order','OrderController');
+            Route::get('order_create/{id}','OrderController@OrderCreate');
+            Route::post('order_create/{id}','OrderController@AddOrder');
+            Route::get('order/{order}/products','OrderController@Products')->name('show-products');
 
         });
 

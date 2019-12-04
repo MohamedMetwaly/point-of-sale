@@ -102,8 +102,7 @@ class ClientController extends Controller
             'address' => 'required|string',
             'image' => 'nullable|image'
         ]);
-        request()->merge(['password' => bcrypt(request()->password)]);
-        $client = Client::create(request()->except( 'image'));
+        $client->update(request()->except( 'image'));
         if (request()->hasFile('image')) {
             $path = public_path();
             $destinationPath = $path . '/uploads/'; // upload path
@@ -114,7 +113,7 @@ class ClientController extends Controller
             $client->image =   'uploads/' . $name;
             $client->save();
         }
-        session()->flash('success', (trans('admin.created')));
+        session()->flash('success', (trans('admin.updated')));
         return redirect(route('client.index'));
     }
 

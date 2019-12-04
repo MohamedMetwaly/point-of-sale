@@ -52,10 +52,18 @@ return [
     'address' => 'العنوان',
     'orders' => 'الطلبات',
     'new_order' => 'أضف طلب',
+    'edit_order' => 'تعديل طلب',
     'product' => 'المنتج',
     'quantity' => 'الكميه',
     'total' => 'الاجمالى',
     'price' => 'السعر',
+    'previous_orders' => 'الطلبات السابقه',
+    'client_name' => 'اسم العميل',
+    'show' => 'عرض',
+    'created_at' => 'تم الإنشاء',
+    'show_products' => 'عرض المنتجات',
+    'loading' => 'تحميل',
+    'print' => 'اطبع',
     'ar' => [
         'name' => 'الاسم بالعربيه'
     ],

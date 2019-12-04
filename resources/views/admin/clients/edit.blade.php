@@ -75,7 +75,7 @@
 
                 <div class="form-group">
                     <label for="address">{{trans('admin.address')}}</label>
-                    {!!Form::text('phone',null,[
+                    {!!Form::text('address',null,[
                         'class' => 'form-control @error("address") is-invalid @enderror'
                     ])!!}
                 </div>
